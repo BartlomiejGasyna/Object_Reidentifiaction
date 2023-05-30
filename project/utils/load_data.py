@@ -20,7 +20,6 @@ def load_data(frames_dir: str = 'data/frames/', dir_name: str = 'data/bboxes.txt
             bbox_line = lines[index + 2 + i].strip().split(' ')
             bbox = [float(value) for value in bbox_line]
             bboxes.append(bbox)
-
         # Create an instance of the Frame class
         frame = Frame(frames_dir, filename, n, bboxes)
         frames.append(frame)
@@ -34,7 +33,7 @@ def load_data(frames_dir: str = 'data/frames/', dir_name: str = 'data/bboxes.txt
 # if __name__ == '__main__':
     
 #     frames = load_data()
-#     # Print the frames
-#     for frame in frames:
-#         print(frame)
-#         print()
+    # Print the frames
+    # for frame in frames:
+    #     print(frame)
+    #     print()

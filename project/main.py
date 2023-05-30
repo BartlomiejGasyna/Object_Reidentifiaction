@@ -22,6 +22,8 @@ for idx, frame in enumerate(frames):
     img_curr = frame.img()
     if idx == 0:
         frame_prev = frame
+        print(' '.join(['-1'] * frame.n))
+        continue
 
     # show bboxes
     for bbox in frame.bboxes:
@@ -43,17 +45,14 @@ for idx, frame in enumerate(frames):
     ###############
     # process(frame, frame_prev)
 
-    cv2.imshow('frame', img_curr)
-    key = cv2.waitKey()
-    if key == ord('q'):
-        cv2.destroyAllWindows
-        break
+
 
     G = FactorGraph()
 
     # no bboxes in frame
     if frame.n == 0:
-        print()
+        frame_prev = frame
+        print(' '.join(['-1'] * frame.n))
         continue
     
     # if no bboxes in previous frame, for each bbox in current frame, print '-1'
@@ -115,9 +114,18 @@ for idx, frame in enumerate(frames):
     result = list(pre_results2.values())
     final = []
 
-    for res in result:
+    for idx, res in enumerate(result):
         value = res - 1
         final.append(value)
+
+        cv2.putText(img_curr, str(value), (int(frame.bboxes[idx][0] + frame.bboxes[idx][2]/2), int(frame.bboxes[idx][1])), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255,0))
     print(*final, sep = ' ')
     ###############
     frame_prev = frame
+
+
+    # cv2.imshow('frame', img_curr)
+    # key = cv2.waitKey()
+    # if key == ord('q'):
+    #     cv2.destroyAllWindows
+    #     break

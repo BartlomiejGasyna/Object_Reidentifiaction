@@ -46,6 +46,8 @@ class Frame():
 
             hist = cv2.calcHist([center_roi_selected_channels], [0], None, [256], [0, 256])
 
+
+
                 # Normalize the histogram
             # hist /= center_w * center_h
             hist /= hist.sum()
