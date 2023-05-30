@@ -31,10 +31,10 @@ def load_data(frames_dir: str = 'data/frames/', dir_name: str = 'data/bboxes.txt
     return frames
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     
-    frames = load_data()
-    # Print the frames
-    for frame in frames:
-        print(frame)
-        print()
+#     frames = load_data()
+#     # Print the frames
+#     for frame in frames:
+#         print(frame)
+#         print()
