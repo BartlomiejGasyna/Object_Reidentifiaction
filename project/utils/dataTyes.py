@@ -122,7 +122,7 @@ def compare_histograms(frame1: Frame, frame2: Frame, G: FactorGraph):
 
             sim_iou = IoU(frame1.bboxes[idx], frame2.bboxes[id2])
             # hist_similarity.append(cv2.compareHist(current_hist, prev_hist, cv2.HISTCMP_CORREL))
-            hist_similarity.append((sim * 0.7 + sim_iou * 0.3  ) )
+            hist_similarity.append((sim * 0.75 + sim_iou * 0.25  ) )
     
     # print('similarity: ', hist_similarity) # DEBUG only
 
@@ -131,7 +131,7 @@ def compare_histograms(frame1: Frame, frame2: Frame, G: FactorGraph):
         # print([[0.29] + hist_similarity])
         # print('hist sim: ', hist_similarity)
         # print('iou: ', IOU[idx])
-        tmp = DiscreteFactor([str(idx)], [frame2.n + 1], [[0.29] + hist_similarity])
+        tmp = DiscreteFactor([str(idx)], [frame2.n + 1], [[0.395] + hist_similarity])
         G.add_factors(tmp)
         G.add_edge(str(idx), tmp)
 

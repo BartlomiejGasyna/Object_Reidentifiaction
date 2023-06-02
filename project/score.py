@@ -16,7 +16,7 @@ def calculate_percentage(file_a, file_b):
         for j in range(min(len(row_a), len(row_b))):
             total_numbers += 1
             if row_a[j] == row_b[j]:
-                print(row_a[j])
+                # print(row_a[j])
                 correct_numbers += 1
     print('correct: ', correct_numbers)
     print('total: ', total_numbers)
