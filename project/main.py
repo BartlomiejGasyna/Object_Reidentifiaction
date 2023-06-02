@@ -26,13 +26,13 @@ for idx, frame in enumerate(frames):
         continue
 
     # show bboxes
-    for bbox in frame.bboxes:
-        x, y, w, h = list(map(int, bbox))
-        cv2.rectangle(img_curr, (x, y), (x+w, y+h), (0, 0, 100) )
+    # for bbox in frame.bboxes:
+    #     x, y, w, h = list(map(int, bbox))
+    #     cv2.rectangle(img_curr, (x, y), (x+w, y+h), (0, 0, 100) )
 
-    for bbox in frame_prev.bboxes:
-        x, y, w, h = list(map(int, bbox))
-        cv2.rectangle(img_curr, (x, y), (x+w, y+h), (0, 0, 255) )
+    # for bbox in frame_prev.bboxes:
+    #     x, y, w, h = list(map(int, bbox))
+    #     cv2.rectangle(img_curr, (x, y), (x+w, y+h), (0, 0, 255) )
     
     # iou_, intersection_boxes = compute_intersection(frame.bboxes, frame_prev.bboxes)
     # print('ious ')
@@ -114,18 +114,24 @@ for idx, frame in enumerate(frames):
     result = list(pre_results2.values())
     final = []
 
+    colors = [(255,0,0), (0, 255,0), (0,0,255), (255,255,0,), (0,255,255), (255,255,255)]
+
+    
     for idx, res in enumerate(result):
         value = res - 1
         final.append(value)
 
         cv2.putText(img_curr, str(value), (int(frame.bboxes[idx][0] + frame.bboxes[idx][2]/2), int(frame.bboxes[idx][1])), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255,0))
+
+        x, y, w, h = list(map(int, frame.bboxes[idx]))
+        cv2.rectangle(img_curr, (x, y), (x+w, y+h), colors[idx] )
+
     print(*final, sep = ' ')
     ###############
     frame_prev = frame
 
-
-    # cv2.imshow('frame', img_curr)
-    # key = cv2.waitKey()
-    # if key == ord('q'):
-    #     cv2.destroyAllWindows
-    #     break
+    cv2.imshow('frame', img_curr)
+    key = cv2.waitKey(100)
+    if key == ord('q'):
+        cv2.destroyAllWindows
+        break
