@@ -63,7 +63,7 @@ for idx, frame in enumerate(frames):
     for i in range(frame.n):
         G.add_node(str(i))
 
-
+    # IOU = compute_intersection(frame.bboxes, frame_prev.bboxes)
     compare_histograms(frame, frame_prev, G)
 
     ##############
@@ -130,8 +130,8 @@ for idx, frame in enumerate(frames):
     ###############
     frame_prev = frame
 
-    cv2.imshow('frame', img_curr)
-    key = cv2.waitKey(100)
-    if key == ord('q'):
-        cv2.destroyAllWindows
-        break
+    # cv2.imshow('frame', img_curr)
+    # key = cv2.waitKey(100)
+    # if key == ord('q'):
+    #     cv2.destroyAllWindows
+    #     break

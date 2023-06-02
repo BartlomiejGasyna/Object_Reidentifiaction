@@ -76,6 +76,7 @@ def compute_intersection(bboxA, bboxB):
     boxes = []
 
     for boxA in bboxA:
+        iou_row = []
         for boxB in bboxB:
             xA = max(boxA[0], boxB[0])
             yA = max(boxA[1], boxB[1])
@@ -87,10 +88,25 @@ def compute_intersection(bboxA, bboxB):
                 boxA_area = boxA[2] * boxA[3]
                 boxB_area = boxB[2] * boxB[3]
                 iou = intersection_area / float(boxA_area + boxB_area - intersection_area)
-                iou_.append(iou)
+                iou_row.append(iou)
                 boxes.append([xA, yA, xB - xA, yB - yA])
+        iou_.append(iou_row)
                 
     return iou_, boxes
+
+def IoU(boxA, boxB):
+    xA = max(boxA[0], boxB[0])
+    yA = max(boxA[1], boxB[1])
+    xB = min(boxA[0] + boxA[2], boxB[0] + boxB[2])
+    yB = min(boxA[1] + boxA[3], boxB[1] + boxB[3])
+    
+    iou = 0
+    if xB > xA and yB > yA:
+        intersection_area = (xB - xA) * (yB - yA)
+        boxA_area = boxA[2] * boxA[3]
+        boxB_area = boxB[2] * boxB[3]
+        iou = intersection_area / float(boxA_area + boxB_area - intersection_area)
+    return iou
 
 # TODO: histograms can be optimized by saving them
 def compare_histograms(frame1: Frame, frame2: Frame, G: FactorGraph):
@@ -98,19 +114,23 @@ def compare_histograms(frame1: Frame, frame2: Frame, G: FactorGraph):
     histograms_previous = frame2.histograms()
 
 
-    hists_similarity = []
+    # hists_similarity = []
     for idx, current_hist in enumerate(histograms_current):
         hist_similarity = []
-        for prev_hist in histograms_previous:
+        for id2, prev_hist in enumerate(histograms_previous):
             sim = cv2.compareHist(current_hist, prev_hist, cv2.HISTCMP_CORREL)
+
+            sim_iou = IoU(frame1.bboxes[idx], frame2.bboxes[id2])
             # hist_similarity.append(cv2.compareHist(current_hist, prev_hist, cv2.HISTCMP_CORREL))
-            hist_similarity.append(sim)
+            hist_similarity.append((sim * 0.7 + sim_iou * 0.3  ) )
     
     # print('similarity: ', hist_similarity) # DEBUG only
 
     # Adding factors to graph
         # print([len(histograms_previous) + 1])
         # print([[0.29] + hist_similarity])
+        # print('hist sim: ', hist_similarity)
+        # print('iou: ', IOU[idx])
         tmp = DiscreteFactor([str(idx)], [frame2.n + 1], [[0.29] + hist_similarity])
         G.add_factors(tmp)
         G.add_edge(str(idx), tmp)
