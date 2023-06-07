@@ -1,4 +1,4 @@
-from utils.dataTyes import Frame, FrameList
+from utils.Frame import Frame, FrameList
 
 def load_data(frames_dir: str = 'data/frames/', dir_name: str = 'data/bboxes.txt'):
     frames = FrameList()

@@ -1,9 +1,8 @@
 import cv2
-import matplotlib.pyplot as plt
-
+# import matplotlib.pyplot as plt
 from pgmpy.models import FactorGraph
 from pgmpy.factors.discrete import DiscreteFactor
-# from pgmpy.inference import BeliefPropagation
+import math
 
 class Frame():
     ''' Frame class stores information about frame filename, number of bboxes, bbox coordinates'''
@@ -48,8 +47,7 @@ class Frame():
 
 
 
-                # Normalize the histogram
-            # hist /= center_w * center_h
+            # Normalize the histogram
             hist /= hist.sum()
 
 
@@ -70,31 +68,10 @@ class FrameList(list):
             raise TypeError("Only instances of Frame class can be added to FrameList")
 
 
-
-def compute_intersection(bboxA, bboxB):
-    iou_ = []
-    boxes = []
-
-    for boxA in bboxA:
-        iou_row = []
-        for boxB in bboxB:
-            xA = max(boxA[0], boxB[0])
-            yA = max(boxA[1], boxB[1])
-            xB = min(boxA[0] + boxA[2], boxB[0] + boxB[2])
-            yB = min(boxA[1] + boxA[3], boxB[1] + boxB[3])
-            
-            if xB > xA and yB > yA:
-                intersection_area = (xB - xA) * (yB - yA)
-                boxA_area = boxA[2] * boxA[3]
-                boxB_area = boxB[2] * boxB[3]
-                iou = intersection_area / float(boxA_area + boxB_area - intersection_area)
-                iou_row.append(iou)
-                boxes.append([xA, yA, xB - xA, yB - yA])
-        iou_.append(iou_row)
-                
-    return iou_, boxes
-
 def IoU(boxA, boxB):
+    '''
+    Computes IoU's of two bboxes
+    '''
     xA = max(boxA[0], boxB[0])
     yA = max(boxA[1], boxB[1])
     xB = min(boxA[0] + boxA[2], boxB[0] + boxB[2])
@@ -108,26 +85,45 @@ def IoU(boxA, boxB):
         iou = intersection_area / float(boxA_area + boxB_area - intersection_area)
     return iou
 
-# TODO: histograms can be optimized by saving them
-def compare_histograms(frame1: Frame, frame2: Frame, G: FactorGraph):
+def distance(boxA, boxB, imsize):
+    xA = boxA[0] + boxA[2] / 2
+    yA = boxA[1] + boxA[3] / 2
+
+    xB = boxB[0] + boxB[2] / 2
+    yB = boxB[1] + boxB[3] / 2
+
+    distance = math.sqrt((xB - xA) ** 2 + (yB - yA) ** 2)
+    dist_norm = 1.0 - (distance / imsize)
+    # print('dist: ', dist_norm)
+    return(dist_norm)
+
+def compare_frames(frame1: Frame, frame2: Frame, G: FactorGraph):
+    ''' 
+    Ths function compares similarities between frames by computing weighted similarities based on:
+    - Histogram similarity - weight - 0.75
+    - IoU - weight - 0.25
+    '''
     histograms_current = frame1.histograms()
     histograms_previous = frame2.histograms()
 
 
-    # hists_similarity = []
     for idx, current_hist in enumerate(histograms_current):
-        hist_similarity = []
+        similarity = []
         for id2, prev_hist in enumerate(histograms_previous):
-            sim = cv2.compareHist(current_hist, prev_hist, cv2.HISTCMP_CORREL)
+            hist_sim = cv2.compareHist(current_hist, prev_hist, cv2.HISTCMP_CORREL)
+            iou_sim = IoU(frame1.bboxes[idx], frame2.bboxes[id2])
 
-            sim_iou = IoU(frame1.bboxes[idx], frame2.bboxes[id2])
-            hist_similarity.append((sim * 0.75 + sim_iou * 0.25  ) )
+            # distance is unsued - IoU gives better results
+            # w, h = frame1.img().shape[:2]
+            # dist = distance(frame1.bboxes[idx], frame2.bboxes[id2], math.sqrt(w**2 + h**2))
+
+            similarity.append((hist_sim * 0.75 + iou_sim * 0.25) )
     
-    # print('similarity: ', hist_similarity) # DEBUG only
+    # print('similarity: ', similarity) # DEBUG only
 
     # Adding factors to graph
-        tmp = DiscreteFactor([str(idx)], [frame2.n + 1], [[0.395] + hist_similarity])
+        tmp = DiscreteFactor([str(idx)], [frame2.n + 1], [[0.395] + similarity])
         G.add_factors(tmp)
         G.add_edge(str(idx), tmp)
 
-    return hist_similarity
+    return similarity
