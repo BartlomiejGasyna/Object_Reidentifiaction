@@ -1,4 +1,3 @@
-# import os
 import cv2
 from utils.load_data import load_data
 
@@ -7,7 +6,7 @@ from pgmpy.factors.discrete import DiscreteFactor
 from pgmpy.inference import BeliefPropagation
 from itertools import combinations
 import numpy as np
-from utils.dataTyes import compute_intersection, compare_histograms
+from utils.dataTyes import compare_histograms
 from collections import OrderedDict
 
 # dir = 'data/frames/'

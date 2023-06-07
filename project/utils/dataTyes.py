@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from pgmpy.models import FactorGraph
 from pgmpy.factors.discrete import DiscreteFactor
-from pgmpy.inference import BeliefPropagation
+# from pgmpy.inference import BeliefPropagation
 
 class Frame():
     ''' Frame class stores information about frame filename, number of bboxes, bbox coordinates'''
@@ -121,44 +121,13 @@ def compare_histograms(frame1: Frame, frame2: Frame, G: FactorGraph):
             sim = cv2.compareHist(current_hist, prev_hist, cv2.HISTCMP_CORREL)
 
             sim_iou = IoU(frame1.bboxes[idx], frame2.bboxes[id2])
-            # hist_similarity.append(cv2.compareHist(current_hist, prev_hist, cv2.HISTCMP_CORREL))
             hist_similarity.append((sim * 0.75 + sim_iou * 0.25  ) )
     
     # print('similarity: ', hist_similarity) # DEBUG only
 
     # Adding factors to graph
-        # print([len(histograms_previous) + 1])
-        # print([[0.29] + hist_similarity])
-        # print('hist sim: ', hist_similarity)
-        # print('iou: ', IOU[idx])
         tmp = DiscreteFactor([str(idx)], [frame2.n + 1], [[0.395] + hist_similarity])
         G.add_factors(tmp)
         G.add_edge(str(idx), tmp)
 
     return hist_similarity
-
-# def compare_histograms(frame1: Frame, frame2: Frame, G: FactorGraph):
-#     hist1 = frame1.histograms()
-#     hist2 = frame2.histograms()
-
-# # In this function, histogram from both previous and current frame are compared against each other. Comparison value is
-# # a mean value for comparing considered channels. For comparing I used ready Bhattacharyya method.
-
-#     sum = 0
-#     for i in range(len(hist1)):
-#         mean_j = []
-#         sum = 0
-#         for j in range(len(hist2)):
-#             comparison1 = cv2.compareHist(hist1[i][0],hist2[j][0],cv2.HISTCMP_BHATTACHARYYA)
-#             comparison2 = cv2.compareHist(hist1[i][1],hist2[j][1],cv2.HISTCMP_BHATTACHARYYA)
-#             # comparison3 = cv2.compareHist(hist1[i][2],hist2[j][2],cv2.HISTCMP_BHATTACHARYYA)
-#             comparison = (comparison1 + comparison2) / 2
-#             comparison = 1 - comparison
-#             mean_j.append(comparison)
-
-# # Adding DiscreteFactor to the FactorGraph()
-#         tmp = DiscreteFactor([str(i)], [len(hist2) + 1], [[0.29] + mean_j])
-#         G.add_factors(tmp)
-#         G.add_edge(str(i),tmp)
-
-#     return mean_j
