@@ -1,5 +1,4 @@
 import cv2
-# import matplotlib.pyplot as plt
 from pgmpy.models import FactorGraph
 from pgmpy.factors.discrete import DiscreteFactor
 import math

@@ -1,6 +1,11 @@
 from utils.Frame import Frame, FrameList
 
-def load_data(frames_dir: str = 'data/frames/', dir_name: str = 'data/bboxes.txt'):
+def load_data(dir: str):
+    dir = str(dir)
+    frames_dir = dir + '/frames/'
+    dir_name = dir + '/bboxes.txt'
+
+
     frames = FrameList()
 
     # Open the template file for reading

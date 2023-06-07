@@ -28,7 +28,7 @@ def calculate_percentage(file_a, file_b):
 
 
 file_a = 'results.txt'
-file_b = 'gt.txt'
+file_b = 'data/gt.txt'
 percentage = calculate_percentage(file_a, file_b)
 print(f"Percentage of correct numbers printed: {percentage:.2f}%")
 
